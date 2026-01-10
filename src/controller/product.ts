@@ -1,5 +1,4 @@
 import express, { Response, Request } from 'express';
-import { ProductService } from '../services/product-service.js';
 import { CreateProductDTO } from '../DTO/create-product.dto.ts';
 import { UpdateProductDTO } from '../DTO/update-product.dto.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
