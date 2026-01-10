@@ -11,6 +11,7 @@ router.route('/create').post(async (req: Request, res: Response) => {
 })
 
 router.route('/update/:id').patch(async (req: Request, res: Response) => {
+    const idFound: string | null = String(req.params.id);
     const body: UpdateProductDTO = req.body;
     await updateProductDetails(body);
     return res.json('Successfully updated!');
