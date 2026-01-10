@@ -43,6 +43,8 @@
     "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     // "jsx": "react-jsx",
     // "verbatimModuleSyntax": true,
     // "isolatedModules": true,
