@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ObjectIdColumn, PrimaryColumn, ManyToMany, ManyToOne } from 'typeorm';
 import { TrackingType } from '../enums/Tracking';
 import { ProductStatus } from '../enums/ProductStatus';
+import { IVariantAttr } from '../interfaces/IVariantAttr';
 
 @Entity({ name: "product"})
 export class Product {
@@ -20,8 +21,8 @@ export class Product {
     })
     tracking_type!: TrackingType;
 
-    @Column()
-    is_active!: string;
+    @Column({ type: 'boolean', default: true })
+    is_active!: boolean;
 
     @Column()
     barcode!: number;
@@ -44,6 +45,9 @@ export class Product {
 
     @Column({ nullable: true })
     comment!: string;
+
+    @Column({ nullable: true })
+    variant_attributes: IVariantAttr;
 
     @ManyToOne((type) => Product, (product) => product.variant_children)
     variant_parent!: Product | null
