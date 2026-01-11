@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, ObjectIdColumn, PrimaryColumn, OneToMany, Check } from 'typeorm';
 import { Product } from './Product';
+import { IVariantChildren } from '../interfaces/IVariantChildren';
 
 @Entity({ name: "purchase" })
 @Check(`"quantity" > 0`)
@@ -8,10 +9,10 @@ export class PurchaseReceipt {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @PrimaryColumn({ type: "uuid" })
+    @PrimaryColumn()
     supplier_id!: string
 
-    @PrimaryColumn({ type: "uuid" })
+    @PrimaryColumn()
     warehouse_id!: string
 
     @PrimaryColumn({ type: "timestamp with time zone" })
@@ -33,13 +34,15 @@ export class PurchaseReceipt {
     })
     unit_price!: number
 
-    @PrimaryColumn({ type: "timestamp with time zone" })
-    expiration_date!: Date
+    @Column({ type: "timestamp with time zone", nullable: true })
+    expiration_date!: Date | null
 
-    @Column()
-    lot_code!: number
+    @Column({ nullable: true })
+    lot_code!: number | null
 
-    @Column()
-    serial_numbers!: Array<number>
-    //@OneToMany(() => Product, )
+    @Column({ nullable: true})
+    serial_numbers!: Array<number> | null
+
+    @OneToMany(() => Product, (product) => product.variants)
+    products: Array<IVariantChildren> | Array<Product>
 }
