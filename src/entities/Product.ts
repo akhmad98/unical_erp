@@ -1,18 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ObjectIdColumn, PrimaryColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { TrackingType } from '../enums/Tracking';
 import { ProductStatus } from '../enums/ProductStatus';
-import { IVariantAttr } from '../interfaces/IVariantAttr';
+import { IVariantChildren } from '../interfaces/IVariantChildren';
 
 @Entity({ name: "product"})
 export class Product {
+    @PrimaryGeneratedColumn('uuid')
+    product_id: string;
+
     @Column()
     name!: string;
 
-    @PrimaryColumn({ type: 'string', generated: 'uuid' })
+    @PrimaryColumn({ type: 'string' })
     sku!: string;
 
-    @Column()
-    unit_of_measure!: number;
+    @Column({ nullable:  true })
+    unit_of_measure!: number | null;
 
     @Column({
         type: 'enum',
@@ -24,8 +27,8 @@ export class Product {
     @Column({ type: 'boolean', default: true })
     is_active!: boolean;
 
-    @Column()
-    barcode!: number;
+    @Column({ nullable: true })
+    barcode!: number | null;
 
     @Column({
         type: 'enum',
@@ -34,8 +37,8 @@ export class Product {
     })
     status!: ProductStatus;
 
-    @Column()
-    min_stock_level!: number;
+    @Column({ nullable: true })
+    min_stock_level!: number | null;
 
     @PrimaryColumn({ type: "timestamp with time zone" })
     edited_at!: Date
@@ -44,14 +47,8 @@ export class Product {
     edited_by!: string
 
     @Column({ nullable: true })
-    comment!: string;
+    comment!: string | null;
 
     @Column({ nullable: true })
-    variant_attributes: IVariantAttr;
-
-    @ManyToOne((type) => Product, (product) => product.variant_children)
-    variant_parent!: Product | null
-
-    @OneToMany((type) => Product, (product) => product.variant_parent)
-    variant_children!: Product[] | null
+    variants: Array<IVariantChildren> | null;
 }

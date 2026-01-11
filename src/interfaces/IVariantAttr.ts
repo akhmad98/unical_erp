@@ -1,4 +1,4 @@
 export interface IVariantAttr {
-    size: number,
+    size: string,
     color: string,
 }

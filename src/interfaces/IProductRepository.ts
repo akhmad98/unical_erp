@@ -4,6 +4,6 @@ import { IProduct } from "./IProduct";
 
 export interface IProductRepository {
     saveNewProduct(body: CreateProductDTO, emailby: string): Promise<IProduct>;
-    updateAnProduct(productId: string, body: UpdateProductDTO, emailby: string): void;
+    updateAnProduct(productId: string, body: UpdateProductDTO | Partial<UpdateProductDTO>, emailby: string): void;
     deleteProduct(product_id: string, emailby: string): void;
 }

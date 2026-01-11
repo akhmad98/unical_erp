@@ -1,12 +1,12 @@
-import { IsUUID, IsEnum, IsString, IsNumber, ValidateIf } from "class-validator";
+import { IsEnum, IsString, IsNumber, ValidateIf, IsNotEmpty } from "class-validator";
 import { TrackingType } from "../enums/Tracking";
-import { IVariantAttr } from "../interfaces/IVariantAttr";
+import { VariantProductDTO } from "./variant-product-DTO";
 
 export class CreateProductDTO {
     @IsString()
     readonly name: string;
 
-    @IsUUID()
+    @IsString()
     readonly sku: string;
 
     @IsNumber()
@@ -19,5 +19,5 @@ export class CreateProductDTO {
     readonly barcode: number
 
     @ValidateIf(el => el.tracking_type === TrackingType.VARIANT)
-    readonly variant_attributes: IVariantAttr;
+    readonly variants: Array<VariantProductDTO>;
 }
