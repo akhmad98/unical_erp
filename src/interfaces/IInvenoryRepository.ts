@@ -1,4 +1,7 @@
+import { IStockAvailability } from "./IStockAvailability";
+
 export interface IInventoryRepository {
-    incrementInventory(): Promise<void>;
-    decrementInventory(): Promise<void>;
+    incrementInventory(productId: string, qnty: number, emailby: string): Promise<void>;
+    decrementInventory(productId: string, qnty: number, emailby: string): Promise<void>;
+    checksAvailable(productId: string, qnty: number, emailby: string): Promise<IStockAvailability>;
 }

@@ -14,8 +14,8 @@ export class Product {
     @PrimaryColumn({ type: 'string' })
     sku!: string;
 
-    @Column({ nullable:  true })
-    unit_of_measure!: number | null;
+    @Column({ default: 1 })
+    unit_of_measure!: number;
 
     @Column({
         type: 'enum',
@@ -37,8 +37,8 @@ export class Product {
     })
     status!: ProductStatus;
 
-    @Column({ nullable: true })
-    min_stock_level!: number | null;
+    @Column({ nullable: true, default: 0 })
+    min_stock_level!: number;
 
     @PrimaryColumn({ type: "timestamp with time zone" })
     edited_at!: Date
