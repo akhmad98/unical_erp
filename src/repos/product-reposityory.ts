@@ -80,4 +80,56 @@ export class ProductRepository implements IProductRepository {
             await dbProduct.save(productFound);
         }
     }
+
+    public async incrementQnty(productId: string, qnty: number, emailby: string): Promise<IProduct> {
+        const dbProduct = this._db.getMongoRepository(Product);
+        const dbUsers = this._db.getMongoRepository(User);
+        const whoisit = await dbUsers.findOneBy({ email: emailby })
+
+        const result = await dbProduct.findOneBy({
+            product_id: productId
+        })
+        
+        if(!result) {
+            throw new Error('Not existed product!');
+        }
+
+        if (result.tracking_type !== TrackingType.VARIANT) {
+            result.unit_of_measure =+ qnty;
+            result.min_stock_level =+ qnty;
+        } else if (result.tracking_type === TrackingType.VARIANT && result.variants?.length) {
+            result.variants.filter(el => el.sku.match(`${productId}-${el.variant_attributes.color}-${el.variant_attributes.size}`))[0].unit_of_measure =+ qnty;
+            result.variants.filter(el => el.sku.match(`${productId}-${el.variant_attributes.color}-${el.variant_attributes.size}`))[0].min_stock_level =+ qnty;
+        }
+
+        dbProduct.save(result);
+
+        return result as IProduct;
+    }
+
+    public async decrementQnty(productId: string, qnty: number, emailby: string): Promise<IProduct> {
+        const dbProduct = this._db.getMongoRepository(Product);
+        const dbUsers = this._db.getMongoRepository(User);
+        const whoisit = await dbUsers.findOneBy({ email: emailby })
+
+
+
+        const result = await dbProduct.findOneBy(
+            { product_id: productId }
+        );
+
+        if(!result) {
+            throw new Error('Not existed product!');
+        }
+
+        if (result.tracking_type !== TrackingType.VARIANT) {
+            result.unit_of_measure =- qnty;
+            result.min_stock_level =- qnty;
+        } else if (result.tracking_type === TrackingType.VARIANT && result.variants?.length) {
+            result.variants.filter(el => el.sku.match(`${productId}-${el.variant_attributes.color}-${el.variant_attributes.size}`))[0].unit_of_measure =- qnty;
+            result.variants.filter(el => el.sku.match(`${productId}-${el.variant_attributes.color}-${el.variant_attributes.size}`))[0].min_stock_level =- qnty;
+        }
+
+        return result as IProduct;
+    }
 }

@@ -1,17 +1,19 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'typeorm';
 import { TrackingType } from '../enums/Tracking';
 import { ProductStatus } from '../enums/ProductStatus';
 import { IVariantChildren } from '../interfaces/IVariantChildren';
 
 @Entity({ name: "product"})
 export class Product {
-    @PrimaryGeneratedColumn('uuid')
+    @Column({ type: 'string' })
+    @Index()
     product_id: string;
 
     @Column()
     name!: string;
 
     @PrimaryColumn({ type: 'string' })
+    @Index()
     sku!: string;
 
     @Column({ default: 1 })
@@ -25,6 +27,7 @@ export class Product {
     tracking_type!: TrackingType;
 
     @Column({ type: 'boolean', default: true })
+    @Index()
     is_active!: boolean;
 
     @Column({ nullable: true })
@@ -35,6 +38,7 @@ export class Product {
         enum: ProductStatus,
         default: ProductStatus.CONFIRMED
     })
+    @Index()
     status!: ProductStatus;
 
     @Column({ nullable: true, default: 0 })

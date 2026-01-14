@@ -1,9 +1,13 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IVariantChildren } from "../interfaces/IVariantChildren";
-import { Product } from "./Product";
+import { IProduct } from "../interfaces/IProduct";
 
 @Entity({ name: "inventory" })
 export class Inventory {
+    @Column({ type: 'string' })
+    @Index()
+    product_id: string;
+
     @Column({ type: 'string' })
     warehouse_id: string
 
@@ -11,5 +15,5 @@ export class Inventory {
     edited_at: Date
 
     @Column()
-    items: Array<IVariantChildren | Product> | Array<IVariantChildren & Product> 
+    items: Array<IProduct> | Array<IVariantChildren> | null; 
 }

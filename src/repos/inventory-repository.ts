@@ -1,8 +1,8 @@
 import AppDataSource from "../config/db";
 import { IInventoryRepository } from "../interfaces/IInvenoryRepository";
-import { Product } from "../entities/Product";
-import { User } from "../entities/User";
-import { ProductStatus } from "../enums/ProductStatus";
+import { Inventory } from "../entities/Inventory";
+import { IProduct } from "../interfaces/IProduct";
+import { TrackingType } from "../enums/Tracking";
 
 export class Inventoryrepository implements IInventoryRepository {
     private readonly _db;
@@ -11,40 +11,59 @@ export class Inventoryrepository implements IInventoryRepository {
         this._db = AppDataSource
     }
 
-    public async incrementInventory(productId: string, qnty: number, emailby: string): Promise<void> {
-        const dbProduct = this._db.getMongoRepository(Product);
-        const dbUsers = this._db.getMongoRepository(User);
-        const whoisit = await dbUsers.findOneBy({ email: emailby });
-
-        await dbProduct.increment({ product_id: productId }, "unit_of_measure", qnty);
-    }
-
-    public async decrementInventory(productId: string, qnty: number, emailby: string): Promise<void> {
-        const dbProduct = this._db.getMongoRepository(Product);
-        const dbUsers = this._db.getMongoRepository(User);
-        const whoisit = await dbUsers.findOneBy({ email: emailby });
+    public async getInventory(productId: string): Promise<Inventory | null> {
+        const inventoryDb = this._db.getMongoRepository(Inventory);
         
-        await dbProduct.decrement({ product_id: productId }, "unit_of_measure", qnty);
+        const found = await inventoryDb.findOneBy({ product_id: productId});
+        
+        return found;
+    }
+    public async saveNewInventory(warehouseId: string, item: IProduct): Promise<void> {
+        const inventoryDb = this._db.getMongoRepository(Inventory);
+        const newInventory = new Inventory();
+        newInventory.edited_at = new Date();
+        newInventory.warehouse_id = warehouseId;
+        newInventory.product_id = item.product_id;
+        newInventory.items = item.tracking_type === TrackingType.VARIANT ?
+        item.variants : new Array(item);
+        await inventoryDb.save(newInventory);
     }
 
-    public async checksAvailable(productId: string, qnty: number, emailby: string) {
-        const dbProduct = this._db.getMongoRepository(Product);
-        const dbUsers = this._db.getMongoRepository(User);
+    public async updateInventory(productId: string, item: IProduct): Promise<void> {
+        const inventoryDb = this._db.getMongoRepository(Inventory);
 
-        const foundProduct = await dbProduct.findOneBy({ id: productId});
-        if (!foundProduct || foundProduct.is_active === false || foundProduct.status === ProductStatus.CANCELLED) {
+        await inventoryDb.updateOne(
+            { product_id: productId },
+            {
+                $set: {
+                    edited_at: new Date(),
+                    items: item.tracking_type === TrackingType.VARIANT ?
+                        item.variants : new Array(item)
+                }
+            }
+        );
+    }
+
+    public async checksAvailable(productId: string, sku: string, qnty: number) {
+        const inventoryDb = this._db.getMongoRepository(Inventory);
+
+        const foundBy = await inventoryDb.findOneBy({
+            "items.sku": sku, product_id: productId, is_active: true
+        })
+
+        if (!foundBy) {
             throw new Error('Product not found!');
         }
-
-        if (foundProduct?.min_stock_level) {
-            if (foundProduct.min_stock_level > 0 && qnty < foundProduct?.min_stock_level) {
+        const found = foundBy.items?.filter(el => el.sku === sku)[0];
+        if (found?.unit_of_measure) {
+            if (found.unit_of_measure > 0 && qnty < found?.unit_of_measure) {
                 return {
                     result: true,
                 }
             } else {
                 return {
                     result: false,
-                    recommended: foundProduct.min_stock_level
+                    recommended: found.min_stock_level
                 }
             }
         }

@@ -1,7 +1,7 @@
 import { IStockAvailability } from "./IStockAvailability";
 
 export interface IInventoryService {
-    increaseStock(productId: string, quantity: number): Promise<void>;
-    decreaseStock(productId: string, quantity: number): Promise<void>;
-    checksAvailability(productId: string, quantity: number): Promise<IStockAvailability>;
+    increaseStock(productId: string, quantity: number, emailby: string): Promise<void>;
+    decreaseStock(productId: string, quantity: number, emailby: string): Promise<void>;
+    checksAvailability(productId: string, quantity: number, emailby: string): Promise<IStockAvailability>;
 }
