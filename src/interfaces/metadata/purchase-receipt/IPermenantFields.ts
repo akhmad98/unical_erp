@@ -6,7 +6,4 @@ export interface IPermanentFields {
     product_id: string,
     quantity: number,
     unit_price: number,
-    expiration_date?: Date | null
-    lot_code?: number | null
-    serial_numbers?: Array<number> | null
 }

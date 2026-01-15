@@ -1,17 +1,15 @@
 import { ObjectLiteral } from "typeorm";
 // bridge pattern
 // interface for saving
-export interface IPurchaseReceiptStorageByTracking<T extends ObjectLiteral> {
+export interface ITrakckingStorage<T extends ObjectLiteral> {
     saveRecord(
-        supplier_id: string,
         warehouse_id: string,
-        receipt_date: Date,
         currency: number,
         product_id: string,
         quantity: number,
         unit_price: number,
-        additionalFields: T
+        additionalFields: Partial<T>
     ): Promise<void>;
     updateFields(productId: string, sku: string, updateData: Partial<T>): Promise<void>;
-    proceedIncrement(productId: string, sku: string, qnty: number, additionalFields: T): Promise<void>;
+    proceedIncrement(productId: string, sku: string, qnty: number, additionalFields: Partial<T>): Promise<void>;
 }
